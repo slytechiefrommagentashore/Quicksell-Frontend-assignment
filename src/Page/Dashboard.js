@@ -162,7 +162,34 @@ const Dashboard = () => {
   };
 
   const onDragEnd = (result) => {
-    // Handle drag and drop logic here
+    const { source, destination } = result;
+
+    // If there's no destination (dropped outside a droppable area), do nothing
+    if (!destination) {
+      return;
+    }
+
+    // If the source and destination are the same, do nothing
+    if (source.droppableId === destination.droppableId && source.index === destination.index) {
+      return;
+    }
+
+    // Get the source and destination columns
+    const sourceColumn = priority[source.droppableId];
+    const destinationColumn = priority[destination.droppableId];
+
+    // Get the dragged item
+    const [movedItem] = sourceColumn.splice(source.index, 1);
+
+    // Insert the dragged item into the destination column
+    destinationColumn.splice(destination.index, 0, movedItem);
+
+    // Update the state with the new order
+    setPriority({
+      ...priority,
+      [source.droppableId]: sourceColumn,
+      [destination.droppableId]: destinationColumn,
+    });
   };
 
   const addTask = (newTask) => {
